@@ -10,10 +10,10 @@
   <meta property="og:type" content="website">
   <meta name="color-scheme" content="light dark">
   <link rel="preload" href="../assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/style.css?v=20261012b">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <script data-goatcounter="https://gastro-x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-  <script src="demo.js" defer></script>
+  <script src="demo.js?v=20261012b" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -52,28 +52,122 @@
           </div>
         </fieldset>
         <div class="demo-actions">
-          <button type="button" id="open" class="btn">Open the fridge</button>
+          <button type="button" id="open" class="btn">Stock the kitchen</button>
           <label class="toggle"><input type="checkbox" id="local" checked> <span id="local-label">Show in Italian</span></label>
         </div>
+        <p class="instr">Open the fridge, the freezer and the cupboard, then drag into the pot what your dish for two would use. Tap any item to see why it is there, or to use only part of it.</p>
+        <p class="note center" id="kitchen-note" aria-live="polite"></p>
       </div>
 
-      <section class="menu fridge" id="fridge" hidden>
-        <h2 class="it" id="fridge-title">What is in the kitchen</h2>
-        <p class="note top" id="fridge-note" aria-live="polite"></p>
-        <p class="instr">Your turn: plan one dish for two people. For each item, mark whether your dish would use none of it, part of it or all of it, as participants do in the study.</p>
-        <div class="score" role="status" aria-live="polite">
-          <div class="score-row"><span class="score-label">Waste-weighted use</span><span class="score-val" id="wui">0%</span></div>
-          <div class="bar"><span id="wui-bar"></span></div>
-          <p class="small muted" id="urgent-used">Items that need using soon: 0 used</p>
+      <section class="kitchen" id="kitchen" aria-label="Kitchen">
+        <div class="room">
+          <div class="fridge-unit">
+            <div class="compart freezer">
+              <div class="inside" id="freezer-in" inert>
+                <span class="lbl">Freezer</span>
+                <div class="zone" id="z-freezer" data-empty="Only ice cubes in here"></div>
+              </div>
+              <button type="button" class="door" aria-expanded="false" aria-controls="freezer-in" data-what="the freezer">
+                <span class="leaf l"><span class="handle"></span><span class="frost" aria-hidden="true">❄</span></span>
+                <span class="sr">Open the freezer</span>
+              </button>
+            </div>
+            <div class="compart main">
+              <div class="inside" id="fridge-in" inert>
+                <div class="zone shelves" id="z-fridge"></div>
+                <div class="zone crisper" id="z-crisper"></div>
+              </div>
+              <button type="button" class="door" aria-expanded="false" aria-controls="fridge-in" data-what="the fridge">
+                <span class="leaf l"><span class="handle"></span><span class="memo" aria-hidden="true">dinner<br>for two?</span></span>
+                <span class="sr">Open the fridge</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="stove-unit">
+            <div class="meter" role="status" aria-live="polite">
+              <div class="score-row"><span class="score-label">Rescue meter</span><span class="score-val" id="wui">0%</span></div>
+              <div class="bar"><span id="wui-bar"></span></div>
+              <p class="small" id="urgent-used">Urgent food rescued: 0</p>
+            </div>
+            <div class="pot" id="pot">
+              <svg class="pot-back" viewBox="0 0 200 150" aria-hidden="true" focusable="false">
+                <rect x="1" y="46" width="30" height="11" rx="5.5" class="p-dark"/>
+                <rect x="169" y="46" width="30" height="11" rx="5.5" class="p-dark"/>
+                <ellipse cx="100" cy="40" rx="80" ry="15" class="p-rim"/>
+                <ellipse cx="100" cy="40" rx="71" ry="10.5" class="p-mouth"/>
+              </svg>
+              <div class="pot-in" id="pot-in" aria-hidden="true"></div>
+              <svg class="pot-front" viewBox="0 0 200 150" aria-hidden="true" focusable="false">
+                <path d="M20 40 A80 15 0 0 0 180 40 L170 128 Q168 142 154 142 L46 142 Q32 142 30 128 Z" class="p-body"/>
+                <path d="M20 40 A80 15 0 0 0 180 40" fill="none" class="p-lip"/>
+                <path d="M44 70 L48 122" class="p-shine"/>
+              </svg>
+              <span class="steam s1"></span><span class="steam s2"></span><span class="steam s3"></span>
+              <p class="pot-hint" id="pot-hint">drag food here</p>
+            </div>
+            <div class="hob" aria-hidden="true"><span class="flame"></span><span class="flame"></span><span class="flame"></span><span class="flame"></span></div>
+            <button type="button" id="cook" class="btn" disabled>Cook!</button>
+          </div>
+
+          <div class="pantry-unit">
+            <div class="compart cupboard">
+              <div class="inside" id="pantry-in" inert>
+                <div class="zone shelves" id="z-shelf"></div>
+                <div class="zone basket" id="z-basket"></div>
+              </div>
+              <button type="button" class="door double" aria-expanded="false" aria-controls="pantry-in" data-what="the cupboard">
+                <span class="leaf l"><span class="knob"></span></span><span class="leaf r"><span class="knob"></span></span>
+                <span class="sr">Open the cupboard</span>
+              </button>
+            </div>
+          </div>
+          <div class="counter" aria-hidden="true"></div>
         </div>
-        <div id="fridge-list"></div>
-        <p class="legend"><span class="dot"></span> needs using soon. Tap an item to see why it is here.</p>
+
+        <div class="potlist-wrap" id="potlist-wrap" hidden>
+          <h3 class="shelf">In the pot</h3>
+          <ul class="potlist" id="potlist"></ul>
+        </div>
+
+        <div class="card" id="card" role="dialog" aria-modal="false" aria-labelledby="card-name" hidden>
+          <button type="button" class="card-close" aria-label="Close">×</button>
+          <div class="card-top">
+            <div id="card-art" class="card-art"></div>
+            <div><p class="card-name" id="card-name"></p><p class="card-detail" id="card-detail"></p></div>
+          </div>
+          <p class="card-why small muted" id="card-why"></p>
+          <div class="card-act">
+            <button type="button" class="pick" data-v="1">Put it all in</button>
+            <button type="button" class="pick" data-v="0.5">Use part of it</button>
+            <button type="button" class="pick" data-v="0">Leave it</button>
+          </div>
+        </div>
+
+        <div class="result" id="result" role="dialog" aria-labelledby="res-title" hidden>
+          <p class="kicker">Dinner for two</p>
+          <h3 id="res-title">Nice rescue</h3>
+          <p class="res-score"><span id="res-score">0%</span> <span class="small muted">on the rescue meter</span></p>
+          <p id="res-urgent"></p>
+          <div id="res-left-wrap">
+            <p class="small muted">Still waiting in the kitchen:</p>
+            <ul class="res-left" id="res-left"></ul>
+          </div>
+          <p class="small muted">Nobody can use a whole kitchen in one dish: what matters is which food gets rescued. In the study, home cooks and AI models plan dishes from the same kitchens.</p>
+          <div class="res-act">
+            <button type="button" class="btn ghostbtn" id="res-again">Keep cooking</button>
+            <button type="button" class="btn" id="res-restock">Restock the kitchen</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="col">
         <details class="explain">
-          <summary>How the score works</summary>
-          <p>Every item carries a weight: the chance that it ends up in the bin if this dish does not use it. Items that need using today, or that are opened and will not keep, count fully (weight 1). Everything else counts by how often UK households throw that food away: about 0.41 for potatoes, 0.26 for bread, 0.05 for milk. The score is the weighted share of the kitchen your dish uses, counting “part of it” as half. Nobody can use a whole kitchen in one dish; what matters is which food you rescue. In the study, people can also mark ingredients they do not know or cannot eat, and those items are left out of their score.</p>
+          <summary>How the rescue meter works</summary>
+          <p>The rescue meter is the study’s waste-weighted use index. Every item carries a weight: the chance that it ends up in the bin if this dish does not use it. Items that need using today, or that are opened and will not keep, count fully (weight 1). Everything else counts by how often UK households throw that food away: about 0.41 for potatoes, 0.26 for bread, 0.05 for milk. The meter shows the weighted share of the kitchen your dish uses, counting “part of it” as half. In the study, people can also mark ingredients they do not know or cannot eat, and those items are left out of their score.</p>
           <p>The study uses the same index, preregistered before data collection, to compare home cooks with AI models given the same kitchens.</p>
         </details>
-      </section>
+      </div>
 
       <div class="col">
         <h2>How a kitchen is stocked</h2>

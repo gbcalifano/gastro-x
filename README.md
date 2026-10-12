@@ -29,7 +29,7 @@ Then open <http://localhost:8000>. The demo loads `demo/items.json`, so pages mu
 
 ## Deployment
 
-GitHub Pages publishes the `main` branch from the repository root. The custom domain is set in `CNAME`, and HTTPS is enforced.
+GitHub Pages publishes the `main` branch from the repository root. The custom domain is set in `CNAME`, and HTTPS is enforced. Pages link to `assets/style.css` and `demo/demo.js` with a version query (`?v=YYYYMMDD`); update it in every page when either file changes, so browsers do not serve a cached copy.
 
 ## Privacy
 
