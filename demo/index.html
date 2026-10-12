@@ -4,15 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Demo · GASTRO-X</title>
-  <meta name="description" content="The GASTRO-X demo app.">
-  <meta property="og:title" content="Demo · GASTRO-X">
-  <meta property="og:description" content="The GASTRO-X demo app.">
+  <meta name="description" content="Open a fridge: kitchens stocked live from national purchase and food waste statistics, as in the GASTRO-X scenarios.">
+  <meta property="og:title" content="Open a fridge · GASTRO-X">
+  <meta property="og:description" content="Kitchens stocked live from national purchase and food waste statistics, as in the GASTRO-X scenarios.">
   <meta property="og:type" content="website">
   <meta name="color-scheme" content="light dark">
   <link rel="preload" href="../assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="../assets/style.css">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <script data-goatcounter="https://gastro-x.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <script src="demo.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -25,7 +26,7 @@
           <li><a href="../team.html">Team</a></li>
           <li><a href="../news.html">News</a></li>
           <li><a href="../outputs.html">Outputs</a></li>
-          <li><a href="../demo/" aria-current="page">Demo</a></li>
+          <li><a href="./" aria-current="page">Demo</a></li>
         </ul>
       </nav>
     </div>
@@ -34,12 +35,56 @@
   <main id="main">
     <div class="wrap">
       <section class="head page">
-        <p class="kicker">Demo</p>
-        <h1>Not yet served</h1>
-        <p class="sub">An open-source kitchen assistant built on the project’s findings will be available here in 2028.</p>
+        <p class="kicker">Demo · first course</p>
+        <h1>Open a fridge</h1>
+        <p class="sub">Pick a corner of Europe and we will stock a kitchen the way the GASTRO-X scenarios are built: from what households there buy, and from what households throw away.</p>
       </section>
       <div class="orn">✕</div>
-      <p class="center"><a href="../project.html#demo">Read about the demo</a></p>
+
+      <div class="col">
+        <fieldset class="regions" aria-label="Region">
+          <legend class="kicker">Choose a region</legend>
+          <div class="region-grid">
+            <button type="button" class="region" data-c="IT" aria-pressed="true"><span class="r-area">Southern Europe</span><span class="r-country">Italy</span></button>
+            <button type="button" class="region" data-c="DE" aria-pressed="false"><span class="r-area">Western Europe</span><span class="r-country">Germany</span></button>
+            <button type="button" class="region" data-c="PL" aria-pressed="false"><span class="r-area">Eastern Europe</span><span class="r-country">Poland</span></button>
+            <button type="button" class="region" data-c="UK" aria-pressed="false"><span class="r-area">Northern Europe</span><span class="r-country">United Kingdom</span></button>
+          </div>
+        </fieldset>
+        <div class="demo-actions">
+          <button type="button" id="open" class="btn">Open the fridge</button>
+          <label class="toggle"><input type="checkbox" id="local" checked> <span id="local-label">Show in Italian</span></label>
+        </div>
+      </div>
+
+      <section class="menu fridge" id="fridge" hidden>
+        <h2 class="it" id="fridge-title">What is in the kitchen</h2>
+        <p class="note top" id="fridge-note" aria-live="polite"></p>
+        <p class="instr">Your turn: plan one dish for two people. For each item, mark whether your dish would use none of it, part of it or all of it, as participants do in the study.</p>
+        <div class="score" role="status" aria-live="polite">
+          <div class="score-row"><span class="score-label">Waste-weighted use</span><span class="score-val" id="wui">0%</span></div>
+          <div class="bar"><span id="wui-bar"></span></div>
+          <p class="small muted" id="urgent-used">Items that need using soon: 0 used</p>
+        </div>
+        <div id="fridge-list"></div>
+        <p class="legend"><span class="dot"></span> needs using soon. Tap an item to see why it is here.</p>
+        <details class="explain">
+          <summary>How the score works</summary>
+          <p>Every item carries a weight: the chance that it ends up in the bin if this dish does not use it. Items that need using today, or that are opened and will not keep, count fully (weight 1). Everything else counts by how often UK households throw that food away: about 0.41 for potatoes, 0.26 for bread, 0.05 for milk. The score is the weighted share of the kitchen your dish uses, counting “part of it” as half. Nobody can use a whole kitchen in one dish; what matters is which food you rescue. In the study, people can also mark ingredients they do not know or cannot eat, and those items are left out of their score.</p>
+          <p>The study uses the same index, preregistered before data collection, to compare home cooks with AI models given the same kitchens.</p>
+        </details>
+      </section>
+
+      <div class="col">
+        <h2>How a kitchen is stocked</h2>
+        <ol class="steps">
+          <li><strong>Shelves.</strong> Every kitchen has the same 19 places: bread, a cake or pizza, two staples, three meats, a fish, three dairy items, two fruits, four vegetables, a tin or frozen bag, a sauce or snack. A fixed layout keeps kitchens comparable across countries.</li>
+          <li><strong>What people buy.</strong> Each place is filled by a weighted draw from national household budget statistics: the more households spend on a food, the more often it turns up. The draw is repeated hundreds of times and one of the most typical kitchens is kept.</li>
+          <li><strong>What people throw away.</strong> Six items are then put at risk, drawn in proportion to how much of each food households waste: salad, potatoes and bread far more often than rice or milk.</li>
+          <li><strong>A leftover.</strong> Cooked food is one of the largest shares of household food waste, so every kitchen also has yesterday’s leftovers.</li>
+        </ol>
+        <p class="muted small">The 20 kitchens used in the study were drawn once, in advance, with the same rules, and are not shown here. Sources: DEFRA Family Food (UK, 2024/25), Destatis EVS 2018 (Germany), Statistics Poland Household Budget Survey 2024, ISTAT household expenditure and price basket 2025 (Italy), Eurostat HICP item weights, WRAP household food waste in the UK 2022. Quantities are typical shop packs. The code is open and will be released with the benchmark.</p>
+      </div>
     </div>
   </main>
 
